@@ -123,6 +123,9 @@ get_header();
 
 
 <script>
+
+    const clientID = '<?php echo get_option('client_id'); ?>';
+    const secretKey = '<?php echo get_option('secret_key'); ?>';
     const apiUrl = 'https://SOURCE.com/wp-json/custom/v1/posts/';
     const coursesContainer = document.getElementById('show-courses-container');
     const loader = document.getElementById('loader');
@@ -145,8 +148,19 @@ get_header();
             path: newUrl
         }, '', newUrl);
 
-        fetch(`${apiUrl}?cpage=${cpage}&per_page=${perPage}&type=${type}&category=${category}`)
-            .then(response => response.json())
+        fetch(`${apiUrl}?cpage=${cpage}&per_page=${perPage}&type=${type}&category=${category}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${clientID}:${secretKey}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Invalid API key or other error');
+                }
+                return response.json();
+            })
             .then(data => {
                 displayCourses(data.courses);
                 setupPagination(data.total_pages, cpage, type, category);
@@ -354,7 +368,13 @@ get_header();
 
     // Function to fetch courses and update the "Showing" text
     async function fetchCoursesResponse(page = 1, perPage = 9, type = 'general', category = '') {
-        const response = await fetch(`https://SOURCE.com/wp-json/custom/v1/posts/?cpage=${page}&per_page=${perPage}&type=${type}&category=${category}`);
+        const response = await fetch(`${apiUrl}?cpage=${page}&per_page=${perPage}&type=${type}&category=${category}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${clientID}:${secretKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
         const data = await response.json();
 
         const totalCourses = data.total_posts;

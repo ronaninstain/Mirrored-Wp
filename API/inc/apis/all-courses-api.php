@@ -16,6 +16,7 @@ add_action('rest_api_init', function () {
     register_rest_route('custom/v1', '/posts/', [
         'methods' => 'GET',
         'callback' => 'get_all_courses',
+        'permission_callback' => 'verify_secret_key',
         'args' => [
             'type' => [
                 'default' => 'general', // 'general', 'latest', 'alphabetical'
@@ -72,6 +73,44 @@ add_action('rest_api_init', function () {
     ]);
 });
 
+function verify_secret_key(WP_REST_Request $request)
+{
+    $provided_key = $request->get_header('Authorization');
+    // var_dump($provided_key);
+    // Check if the provided key starts with 'Bearer '
+    if (strpos($provided_key, 'Bearer ') === 0) {
+
+        //$provided_key = substr($provided_key, 7);
+
+
+        $input = substr($provided_key, 7);
+
+        // Remove 'Bearer ' from the string
+        $input = str_replace('Bearer ', '', $input);
+
+        // Split the string by ':'
+        $parts = explode(':', $input);
+
+
+        $part1 = intval($parts[0]); // Ensure client_id is an integer
+        $part2 = sanitize_text_field($parts[1]);
+
+
+        // Retrieve the expected secret key from the database based on client_id
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'cmc_clients';
+
+        $query = $wpdb->prepare("SELECT secret_key FROM $table_name WHERE id = %d", $part1);
+
+        $row = $wpdb->get_row($query);
+
+        if ($row && $row->secret_key === $part2) {
+            return true;
+        }
+    }
+
+    return new WP_Error('invalid_key', 'Invalid API key or client ID provided', ['status' => 403]);
+}
 
 function get_all_courses(WP_REST_Request $request)
 {
