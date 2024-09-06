@@ -121,12 +121,13 @@ get_header();
 </div>
 <!-- course section ending here -->
 
-
 <script>
+
 
     const clientID = '<?php echo get_option('client_id'); ?>';
     const secretKey = '<?php echo get_option('secret_key'); ?>';
-    const apiUrl = 'https://SOURCE.com/wp-json/custom/v1/posts/';
+
+    const apiUrl = 'https://b2bcore.wpenginepowered.com/wp-json/custom/v1/posts/';
     const coursesContainer = document.getElementById('show-courses-container');
     const loader = document.getElementById('loader');
     const categorySelect = document.getElementById('category-select');
@@ -332,8 +333,19 @@ get_header();
     fetchCourses(initialCpage, initialType, initialCategory);
 
     document.addEventListener('DOMContentLoaded', function () {
-        fetch('https://SOURCE.com/wp-json/custom/v1/course-categories/')
-            .then(response => response.json())
+        fetch('https://b2bcore.wpenginepowered.com/wp-json/custom/v1/course-categories/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${clientID}:${secretKey}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Invalid API key or other error');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     let options = '<option value="">All Categories</option>';
@@ -351,52 +363,8 @@ get_header();
                 console.error('Error fetching categories:', error);
             });
     });
+
 </script>
-
-<script>
-    // Function to get URL parameters
-    function getUrlParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-    }
-
-    // Function to update the "Showing X-Y of Z results" text
-    function updateShowingText(startIndex, endIndex, total) {
-        const showingText = `Showing ${startIndex}-${endIndex} of ${total} results`;
-        document.querySelector('.course-showing-part-left p').textContent = showingText;
-    }
-
-    // Function to fetch courses and update the "Showing" text
-    async function fetchCoursesResponse(page = 1, perPage = 9, type = 'general', category = '') {
-        const response = await fetch(`${apiUrl}?cpage=${page}&per_page=${perPage}&type=${type}&category=${category}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${clientID}:${secretKey}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await response.json();
-
-        const totalCourses = data.total_posts;
-        const startIndex = (page - 1) * perPage + 1;
-        const endIndex = Math.min(page * perPage, totalCourses);
-
-        // Update the showing text
-        updateShowingText(startIndex, endIndex, totalCourses);
-
-        // Further code to handle displaying the courses...
-        console.log(data.courses); // Example of how you can handle the course data
-    }
-
-    // Get page and perPage from URL parameters
-    const page = parseInt(getUrlParameter('page')) || 1; // Default to 1 if not present
-    const perPage = parseInt(getUrlParameter('perPage')) || 9; // Default to 9 if not present
-
-    // Fetch courses with dynamic page and perPage values
-    fetchCoursesResponse(page, perPage);
-</script>
-
-
 <?php
 get_footer();
 ?>

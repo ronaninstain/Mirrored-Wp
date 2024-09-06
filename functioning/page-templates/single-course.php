@@ -6,10 +6,20 @@ get_header();
 $course_id = get_query_var('course_id');
 
 // Define the source site's API endpoint
-$api_url = 'https://SOURCE.com/wp-json/custom-api/v1/courses/' . $course_id;
+$api_url = 'https://b2bcore.wpenginepowered.com/wp-json/custom-api/v1/courses/' . $course_id;
 
-// Fetch data from the API
-$response = wp_remote_get($api_url);
+$client_id = get_option('client_id'); // Update as necessary
+$secret_key = get_option('secret_key'); // Update as necessary
+
+// Add the Authorization header
+$args = array(
+    'headers' => array(
+        'Authorization' => 'Bearer ' . $client_id . ':' . $secret_key,
+    ),
+);
+
+// Fetch data from the API with the Authorization header
+$response = wp_remote_get($api_url, $args);
 
 if (is_wp_error($response)) {
     echo '<p>Unable to retrieve course at this time.</p>';
@@ -25,7 +35,7 @@ $course = $data;
 if (empty($course)) {
     echo '<p>Course not found.</p>';
 } else {
-?>
+    ?>
     <!-- Page Header section start here -->
     <div class="pageheader-section style-2">
         <div class="container">
@@ -42,15 +52,15 @@ if (empty($course)) {
                             $category_count = 0;
                             foreach ($course['categories'] as $category):
                                 if ($category_count >= 2) {
-                                    break; 
+                                    break;
                                 }
-                            ?>
+                                ?>
                                 <div class="course-cate">
                                     <?php $category_link = home_url('/display-courses-by-category?category=' . urlencode($category)); ?>
                                     <a href="<?php echo esc_url($category_link); ?>"><?php echo esc_html($category); ?></a>
                                 </div>
-                            <?php
-                                $category_count++; 
+                                <?php
+                                $category_count++;
                             endforeach;
                             ?>
 
@@ -248,7 +258,8 @@ if (empty($course)) {
                                         <h6>Secure Payment:</h6>
                                     </div>
                                     <div class="sp-thumb">
-                                        <img src="<?php echo get_stylesheet_directory_uri() . '/assets/images/pyment/01.jpg' ?>" alt="CodexCoder">
+                                        <img src="<?php echo get_stylesheet_directory_uri() . '/assets/images/pyment/01.jpg' ?>"
+                                            alt="CodexCoder">
                                     </div>
                                 </div>
                                 <div class="csd-button">
@@ -270,7 +281,7 @@ if (empty($course)) {
         </div>
     </div>
     <!-- Course section end here -->
-<?php
+    <?php
 }
 
 get_footer();

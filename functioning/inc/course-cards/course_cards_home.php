@@ -28,8 +28,18 @@ function fetch_courses_data_shortcode($atts)
             // API endpoint on the source site to fetch course by ID
             $api_url = 'https://b2bcore.wpenginepowered.com/wp-json/custom-api/v1/courses/' . $course_id;
 
+            $client_id = get_option('client_id'); // Update as necessary
+            $secret_key = get_option('secret_key'); // Update as necessary
+
+            // Add the Authorization header
+            $args = array(
+                'headers' => array(
+                    'Authorization' => 'Bearer ' . $client_id . ':' . $secret_key,
+                ),
+            );
+
             // Fetch the course data
-            $response = wp_remote_get($api_url);
+            $response = wp_remote_get($api_url, $args);
 
             // Check if the API call was successful
             if (is_wp_error($response)) {
@@ -90,7 +100,7 @@ function fetch_courses_data_shortcode($atts)
             $levels_output .= '</div>';
 
             // Generate course reviews
-            
+
 
             $output .= '<div class="col">';
             $output .= '<div class="course-item">';

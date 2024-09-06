@@ -1,6 +1,8 @@
 <?php
 
 /* courses, categories, pagination, search, single course, sort api by Shoive start */
+
+
 add_action('rest_api_init', function () {
     // Set CORS headers
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -51,17 +53,20 @@ add_action('rest_api_init', function () {
         array(
             'methods' => 'GET',
             'callback' => 'get_course_by_id',
+            'permission_callback' => 'verify_secret_key2',
         )
     );
 
     register_rest_route('custom/v1', '/course-categories/', array(
         'methods' => 'GET',
         'callback' => 'get_course_categories',
+        'permission_callback' => 'verify_secret_key',
     ));
 
     register_rest_route('custom/v1', '/search-courses', [
         'methods' => 'GET',
         'callback' => 'search_courses',
+        'permission_callback' => 'verify_secret_key',
         'args' => [
             'term' => [
                 'required' => true,
@@ -111,6 +116,35 @@ function verify_secret_key(WP_REST_Request $request)
 
     return new WP_Error('invalid_key', 'Invalid API key or client ID provided', ['status' => 403]);
 }
+
+function verify_secret_key2(WP_REST_Request $request)
+{
+    $provided_key = $request->get_header('Authorization');
+    
+    if (strpos($provided_key, 'Bearer ') === 0) {
+        // Extract the Bearer token value
+        $input = substr($provided_key, 7);
+        $input = str_replace('Bearer ', '', $input);
+        $parts = explode(':', $input);
+
+        $client_id = intval($parts[0]);
+        $secret_key = sanitize_text_field($parts[1]);
+
+        // Retrieve the stored secret key from the database based on client_id
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'cmc_clients';
+        $query = $wpdb->prepare("SELECT secret_key FROM $table_name WHERE id = %d", $client_id);
+        $row = $wpdb->get_row($query);
+
+        // Validate the secret key
+        if ($row && $row->secret_key === $secret_key) {
+            return true;
+        }
+    }
+
+    return new WP_Error('invalid_key', 'Invalid API key or client ID provided', ['status' => 403]);
+}
+
 
 function get_all_courses(WP_REST_Request $request)
 {
