@@ -16,6 +16,7 @@ if (!defined('_S_VERSION')) {
 //by Shoive
 include_once 'inc/all-course-ajax-price.php';
 include_once 'inc/course-cards/course_cards_home.php';
+require_once(get_template_directory() . '/inc/tgmpa/tgmpa-configuration.php');
 
 /**
  * Sets up theme defaults and registers support for various WordPress features.
