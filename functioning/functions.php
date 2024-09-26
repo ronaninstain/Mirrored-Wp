@@ -167,7 +167,6 @@ function display_site_scripts()
 	//by Shoive
 	// wp_enqueue_script('lms-custom-js', get_template_directory_uri() . '/assets/js/lms-custom.js', array(), null, true);
 	wp_enqueue_script('lms-search-js', get_template_directory_uri() . '/assets/js/lms-search2.js', array(), time(), true);
-
 }
 add_action('wp_enqueue_scripts', 'display_site_scripts');
 
@@ -240,3 +239,71 @@ function display_quantity_plus()
 	echo '<div class="inc qtybutton">+</div>';
 }
 add_action('woocommerce_after_quantity_input_field', 'display_quantity_plus');
+
+/* B2b admin role start by shoive */
+
+function create_b2b_admin_role()
+{
+	// Check if the role already exists
+	if (get_role('b2b_administrators')) {
+		// If the role exists, remove it to rewrite its capabilities
+		remove_role('b2b_administrators');
+	}
+
+	// Create a new role based on the administrator role
+	$admin_capabilities = get_role('administrator')->capabilities;
+
+	// Add new role 'B2B Administrators' with admin capabilities
+	add_role('b2b_administrators', 'B2B Administrators', $admin_capabilities);
+
+	// Get the B2B Admin role
+	$role = get_role('b2b_administrators');
+
+	// Remove capabilities to edit, delete, or add users
+	$role->remove_cap('delete_users');
+	$role->remove_cap('create_users');
+	$role->remove_cap('edit_users');
+
+	// Remove theme and plugin management capabilities
+	$role->remove_cap('edit_theme_options');
+	$role->remove_cap('install_themes');
+	$role->remove_cap('delete_themes');
+	$role->remove_cap('update_themes');
+	$role->remove_cap('install_plugins');
+	$role->remove_cap('delete_plugins');
+	$role->remove_cap('update_plugins');
+	$role->remove_cap('edit_plugins');
+
+	// WooCommerce order restrictions (add, edit, delete)
+	$role->remove_cap('delete_shop_orders'); // Prevent deleting orders
+	$role->remove_cap('publish_shop_orders'); // Prevent publishing shop orders
+	$role->add_cap('edit_shop_orders'); // Prevent editing orders
+
+	// Add capabilities to view WooCommerce orders and access the orders tab
+	$role->add_cap('read_private_shop_orders'); // Ability to read private shop orders
+	$role->add_cap('read_shop_orders'); // Ability to read public shop orders
+	$role->add_cap('view_woocommerce_reports'); // View WooCommerce reports
+
+	// Add WooCommerce menu management (necessary to access orders)
+	$role->add_cap('manage_woocommerce'); // Required to access the WooCommerce menu
+
+	// Allow basic viewing capabilities (non-editing)
+	$role->add_cap('read'); // Basic read capability
+	$role->add_cap('view_shop_order'); // View individual orders without editing/deleting them
+
+	// Additional capabilities needed to avoid blank page
+	$role->add_cap('view_woocommerce_orders'); // Allows access to order overview
+	$role->add_cap('view_admin_dashboard'); // Allows access to the WooCommerce dashboard
+}
+add_action('init', 'create_b2b_admin_role');
+
+// Remove ACF menu for B2B Admin role
+function restrict_acf_menu_for_b2b_admin()
+{
+	if (current_user_can('b2b_administrators')) {
+		remove_menu_page('edit.php?post_type=acf-field-group');
+	}
+}
+add_action('admin_menu', 'restrict_acf_menu_for_b2b_admin', 999);
+
+/* B2b admin role end by shoive */

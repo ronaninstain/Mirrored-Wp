@@ -1,5 +1,5 @@
 <!-- breadcrumb start -->
-<div class="breadcrumb-area bg-overlay" style="background-image:url('assets/img/bg/3.png')">
+<div class="breadcrumb-area bg-overlay" style="background-image:url('<?php echo get_template_directory_uri(); ?>/assets/design_2/img/bg/page-header.webp')">
     <div class="container">
         <div class="breadcrumb-inner">
             <div class="section-title mb-0 text-center">
@@ -171,6 +171,7 @@
 
     function fetchCourses(cpage = 1, type = 'general', category = '') {
         const perPage = 8; // Number of courses per page
+        const resultsCountElement = document.querySelector('.course-showing-part-left p');
 
         coursesContainer.style.display = 'none';
 
@@ -179,7 +180,6 @@
             path: newUrl
         }, '', newUrl);
 
-        console.log(`${apiUrl}?cpage=${cpage}&per_page=${perPage}&type=${type}&category=${category}`);
 
         fetch(`${apiUrl}?cpage=${cpage}&per_page=${perPage}&type=${type}&category=${category}`, {
                 method: 'GET',
@@ -195,7 +195,6 @@
                 return response.json();
             })
             .then(data => {
-                console.log(data);
 
                 if (data.courses) {
                     displayCourses(data.courses);
@@ -210,6 +209,13 @@
                 } else {
                     console.error('No pagination data found in response');
                 }
+
+                // Show results information
+                const coursesOnPage = data.courses.length; // Number of courses on the current page
+                const startCourse = (cpage - 1) * perPage + 1;
+                const endCourse = startCourse + coursesOnPage - 1;
+
+                resultsCountElement.innerHTML = `Showing ${startCourse}-${endCourse} results`;
 
                 coursesContainer.style.display = 'flex';
             })
