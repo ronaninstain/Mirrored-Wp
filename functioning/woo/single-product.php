@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The Template for displaying all single products
  *
@@ -26,7 +27,6 @@ get_header('shop'); ?>
 $user = get_current_user();
 
 if (is_user_logged_in()) {
-
 }
 // Get the course ID from the query string
 // $course_id = get_query_var('course_id');
@@ -70,7 +70,7 @@ $course = $data;
 if (empty($course)) {
     echo '<p>Course not found.</p>';
 } else {
-    ?>
+?>
     <!-- Page Header section start here -->
     <div class="pageheader-section style-2">
         <div class="container">
@@ -89,12 +89,12 @@ if (empty($course)) {
                                 if ($category_count >= 2) {
                                     break;
                                 }
-                                ?>
+                            ?>
                                 <div class="course-cate">
                                     <?php $category_link = home_url('/display-courses-by-category?category=' . urlencode($category)); ?>
                                     <a href="<?php echo esc_url($category_link); ?>"><?php echo esc_html($category); ?></a>
                                 </div>
-                                <?php
+                            <?php
                                 $category_count++;
                             endforeach;
                             ?>
@@ -146,6 +146,50 @@ if (empty($course)) {
                     <div class="main-part">
                         <div class="course-item">
                             <div class="course-inner">
+
+                                <?php
+
+                                // get highlight text 
+                                $highlight = get_field("course_highlight");
+                                if ($highlight) {
+                                    echo '<h2>' . $highlight . '</h2>';
+                                }
+
+                                // get requirements filed
+                                $requirements = the_field('requirements');
+                                if ($requirements) {
+                                    echo $requirements;
+                                }
+                                // get career path filed
+                                $careerpath = the_field('career_path');
+                                if ($careerpath) {
+                                    echo $careerpath;
+                                }
+
+                                // get faq repeater content
+                                $rows = get_field('faq_section');
+                                if ($rows) {
+                                    echo '<ul class="slides">';
+                                    foreach ($rows as $row) {
+                                        $question = $row['questions'];
+                                        $answer = $row['answers'];
+                                        echo '<li>';
+                                        echo wp_kses_post(wpautop($question));
+                                        echo wp_kses_post(wpautop($answer));
+                                        echo '</li>';
+                                    }
+                                    echo '</ul>';
+                                }
+                                ?>
+
+                                <?php
+                                // get dynamic sidebar
+                                if (is_active_sidebar('sidebar-1')) : ?>
+                                    <ul id="sidebar">
+                                        <?php dynamic_sidebar('sidebar-1'); ?>
+                                    </ul>
+                                <?php endif; ?>
+
                                 <div class="course-content">
                                     <?php echo wp_kses_post($course['content']); ?>
                                 </div>
@@ -308,7 +352,139 @@ if (empty($course)) {
         </div>
     </div>
     <!-- Course section end here -->
-    <?php
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Step 1: Find the <h4> element that contains the text "Sneak Peek"
+            const headers = document.querySelectorAll('h4');
+            let sneakPeekHeader = null;
+
+            headers.forEach(header => {
+                if (header.textContent.includes('Sneak Peek')) {
+                    sneakPeekHeader = header;
+                }
+            });
+
+            // If no "Sneak Peek" header is found, exit
+            if (!sneakPeekHeader) return;
+
+            // Step 2: Select all <a> tags with <img> elements after the Sneak Peek header
+            let nextElement = sneakPeekHeader.nextElementSibling;
+
+            const imageLinks = [];
+
+            while (nextElement && nextElement.tagName === 'A') {
+                const imgTag = nextElement.querySelector('img');
+                if (imgTag) {
+                    imageLinks.push(nextElement); // Collect the <a> tags with images
+                }
+                nextElement = nextElement.nextElementSibling;
+            }
+
+            // Step 3: Create a wrapper div for the image gallery and move the selected <a> tags inside it
+            const galleryWrapper = document.createElement('div');
+            galleryWrapper.classList.add('image-gallery');
+            imageLinks.forEach(link => galleryWrapper.appendChild(link));
+
+            // Insert the wrapper just after the "Sneak Peek" header
+            sneakPeekHeader.after(galleryWrapper);
+
+            // Step 4: Apply flexbox styling to align the images horizontally
+            const css = `
+    .image-gallery {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 10px;
+    }
+    
+    .image-gallery a {
+        display: inline-block;
+    }
+    
+    .image-gallery img {
+        max-width: 150px;
+        height: auto;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .image-gallery img:hover {
+        transform: scale(1.1);
+    }
+    
+    /* Popup gallery styles */
+    .popup-gallery {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .popup-gallery img {
+        max-width: 80%;
+        max-height: 80%;
+    }
+    
+    #popup-close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    #popup-close:hover {
+        color: #ccc;
+    }`;
+
+            // Step 5: Add the CSS to the page dynamically
+            const styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.innerText = css;
+            document.head.appendChild(styleSheet);
+
+            // Step 6: Create the popup HTML dynamically
+            const popupHTML = `
+    <div id="popup-gallery" class="popup-gallery">
+        <span id="popup-close">&times;</span>
+        <img class="popup-content" id="popup-img">
+    </div>`;
+
+            document.body.insertAdjacentHTML('beforeend', popupHTML);
+
+            // Step 7: Implement the popup gallery functionality
+            const popup = document.getElementById('popup-gallery');
+            const popupImg = document.getElementById('popup-img');
+            const popupClose = document.getElementById('popup-close');
+
+            imageLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    popupImg.src = this.href; // Show the large image in the popup
+                    popup.style.display = 'flex';
+                });
+            });
+
+            // Close the popup when clicking the close button or outside the image
+            popupClose.addEventListener('click', function() {
+                popup.style.display = 'none';
+            });
+
+            popup.addEventListener('click', function(event) {
+                if (event.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+<?php
 }
 
 ?>
