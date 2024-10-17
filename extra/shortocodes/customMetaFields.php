@@ -108,3 +108,59 @@ function save_course_meta_box($post_id)
     }
 }
 add_action('save_post', 'save_course_meta_box');
+
+
+// Check box
+
+// 1. Add Meta Box
+function live_classes_meta_box()
+{
+    add_meta_box(
+        'live_classes_meta',          // Meta box ID
+        'Live Classes',               // Meta box title
+        'live_classes_meta_box_html', // Callback function to display the checkbox
+        'course',                       // Post type (change this to the desired post type)
+        'side'                        // Meta box location
+    );
+}
+add_action('add_meta_boxes', 'live_classes_meta_box');
+
+// 2. Meta Box HTML
+function live_classes_meta_box_html($post)
+{
+    // Get the saved meta value (if exists)
+    $value = get_post_meta($post->ID, '_live_classes_meta_key', true);
+
+    // Output the nonce and checkbox HTML
+    wp_nonce_field('save_live_classes_meta_box', 'live_classes_meta_box_nonce');
+?>
+    <label for="live_classes_meta_checkbox">
+        <input type="checkbox" id="live_classes_meta_checkbox" name="live_classes_meta_checkbox" value="1" <?php checked($value, '1'); ?> />
+        Enable Live Classes
+    </label>
+<?php
+}
+
+// 3. Save Meta Box Data
+function save_live_classes_meta_box_data($post_id)
+{
+    // Check if nonce is valid
+    if (!isset($_POST['live_classes_meta_box_nonce']) || !wp_verify_nonce($_POST['live_classes_meta_box_nonce'], 'save_live_classes_meta_box')) {
+        return;
+    }
+
+    // Check if it's not an autosave
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    // Check user permissions
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    // Save checkbox value
+    $checkbox_value = isset($_POST['live_classes_meta_checkbox']) ? '1' : '';
+    update_post_meta($post_id, '_live_classes_meta_key', $checkbox_value);
+}
+add_action('save_post', 'save_live_classes_meta_box_data');
