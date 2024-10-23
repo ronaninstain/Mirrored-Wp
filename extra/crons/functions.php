@@ -30,7 +30,7 @@ function create_course_tag_taxonomy()
     ));
 }
 
-// For Changing Course button tag
+// For Changing Course button text
 
 function custom_wplms_course_button_label($label)
 {
@@ -128,16 +128,22 @@ add_filter('comment_form_fields', 'workhouse_move_comment_field_to_bottom');
 
 
 
-/* Cron Job By Shoive start */
 
-// Add to your theme's functions.php or custom plugin file
+/* Cron Job By Shoive start */
 function wplms_generate_course_json()
 {
     // Fetch courses (WPLMS uses 'course' as the post type)
     $args = array(
         'post_type'      => 'course',  // Custom post type for course in WPLMS
         'posts_per_page' => -1,        // Retrieve all courses
-        'post_status'    => 'publish'  // Only published courses
+        'post_status'    => 'publish',
+        'meta_query' => array(
+            array(
+                'key' => 'vibe_product',
+                'value' => array(''),
+                'compare' => 'NOT IN'
+            )
+        ), // Only published courses
     );
 
     $courses = new WP_Query($args);
