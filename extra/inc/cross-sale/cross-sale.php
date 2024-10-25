@@ -269,3 +269,57 @@ function my_custom_cart_contains($product_id)
 ===================== Cross Sale End ======================
 ================================================================
 */
+
+/**
+ * Automatically add cross-sell product to cart on visit.
+ */
+add_action('woocommerce_add_to_cart', 'add_cross_sell_product_to_cart', 10, 6);
+
+function add_cross_sell_product_to_cart($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
+{
+    // Skip if in admin, cart, or checkout pages
+    if (is_admin() || is_cart() || is_checkout()) {
+        return;
+    }
+
+    // Define cross-sell product ID and excluded category ID
+    $cross_sell_product_id = 504132;
+    $excluded_category_id = 54705; // EX-PDF category ID
+
+    // Check if the added product belongs to the excluded category
+    $product_categories = wc_get_product_term_ids($product_id, 'product_cat');
+    if (in_array($excluded_category_id, $product_categories)) {
+        return; // Exit if the added product is in the excluded category
+    }
+
+    // Initialize flags and counters
+    $product_exists_in_cart = false;
+    $non_excluded_items_count = 0;
+    $cross_sell_product_key = null;
+
+    // Check if product is already in cart and count non-excluded items
+    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+        $product_id_in_cart = $cart_item['product_id'];
+        $product_categories_in_cart = wc_get_product_term_ids($product_id_in_cart, 'product_cat');
+
+        // Skip if the cross-sell product is already being added
+        if ($product_id === $cross_sell_product_id) {
+            return;
+        }
+
+        if ($product_id_in_cart == $cross_sell_product_id) {
+            $product_exists_in_cart = true;
+            $cross_sell_product_key = $cart_item_key;
+        } elseif (!in_array($excluded_category_id, $product_categories_in_cart)) {
+            // Count items in cart not in the excluded category
+            $non_excluded_items_count++;
+        }
+    }
+
+    // Add or update cross-sell product in cart based on conditions
+    if (!$product_exists_in_cart && $non_excluded_items_count > 0) {
+        WC()->cart->add_to_cart($cross_sell_product_id, $non_excluded_items_count);
+    } elseif ($product_exists_in_cart) {
+        WC()->cart->set_quantity($cross_sell_product_key, max($non_excluded_items_count, 1));
+    }
+}
