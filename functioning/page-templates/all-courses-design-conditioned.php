@@ -1,340 +1,410 @@
-<section class="ds-5-courses-parent">
-    <div class="ds-5-header-section">
-        <div class="container">
-            <div class="ds-5-filter-area">
-                <ul>
-                    <!-- <li class="switch_view">
-      <div class="grid_list_wrapper">
-      <a id="list_view" class="active"><i class="icon-list-1"></i></a>
-      <a id="grid_view"><i class="icon-grid"></i></a>
-      </div>
-      </li> -->
-                    <li id="course-order-select" class="last filter">
+<?php
+if (function_exists('acf_add_options_page')) {
+    $page_header_section_background_image = get_field('page_header_section_background_image', 'option');
+}
+?>
+<!-- Breadcrumb start -->
+<?php
+$background_image = $page_header_section_background_image
+    ? esc_attr($page_header_section_background_image)
+    : get_template_directory_uri() . '/assets/design_4/images/breadcrumb-bg.jpg';
+?>
+<div class="breadcrumb-area bg-img bg-cover" data-bg-image="<?php echo $background_image; ?>">
+    <div class="container">
+        <div class="content text-center">
+            <h2><?php echo the_title(); ?></h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="<?php echo site_url(); ?>">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><?php echo the_title(); ?></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb end -->
 
-                        <div class="dropdown" id="category-select">
-                            <button onclick="csdmyFunction()" id="dropbtn">
-                                Category:<span id="drpdwntxt">All Courses</span>
-                            </button>
-                            <div id="catDropdown" class="dropdown-content">
-                                <a href="#" onclick="csdsetDropDownItem(this)">Accounting &amp; Finance</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Administration</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Animal Care</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Business</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Childcare</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Design</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Employability</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Engineering</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">English</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Fashion &amp; Beauty</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Fitness &amp; First Aid</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Health &amp; Safety</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Hospitality</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Language</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Law</a>
-                                <a href="#" onclick="csdsetDropDownItem(this)">Lifestyle</a>
+<!-- Course-area start -->
+<div class="course-area pt-60 pb-75">
+    <div class="container">
+        <div class="row gx-xl-5">
+            <div class="col-lg-4 col-xl-3">
+                <!-- Spacer -->
+                <div class="pb-40 d-none d-lg-block"></div>
+                <div class="widget-offcanvas offcanvas-lg offcanvas-start" tabindex="-1" id="widgetOffcanvas"
+                    aria-labelledby="widgetOffcanvas">
+                    <div class="offcanvas-header px-20">
+                        <h4 class="offcanvas-title">Filter</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                            data-bs-target="#widgetOffcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body p-0">
+                        <aside class="widget-area px-20" data-aos="fade-up">
+                            <div class="widget widget-categories py-20">
+                                <h5 class="title">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#categories">
+                                        Categories
+                                    </button>
+                                </h5>
+                                <div id="categories" class="collapse show">
+                                    <div class="accordion-body mt-20 scroll-y">
+                                        <ul class="list-group" id="category-select">
+                                            <!-- Categories will populate here -->
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
+                        </aside>
+                    </div>
+                </div>
+                <div class="widget widget-type py-20">
+                    <?php
+                    if (is_active_sidebar("all-course-sidebar")) {
+                        dynamic_sidebar("all-course-sidebar");
+                    }
+                    ?>
+                </div>
+            </div>
+            <div class="col-lg-8 col-xl-9">
+                <!-- Spacer -->
+                <div class="pb-40"></div>
+                <div class="sort-area" data-aos="fade-up">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <h5 class="mb-20 course-showing-count-part">Counting <span class="color-primary">
+                                    Courses...</span></h5>
                         </div>
-
-
-                    </li>
-                </ul>
-                <div class="ds-5-search-wrapper">
-                    <div id="search" class="search-form">
-                        <input type="hidden" name="post_type" value="course" />
-                        <input type="text" class="s course-search-input" id="s" name="s" placeholder="Search courses.."
-                            value="" autocomplete="off" />
-                        <button type="submit" class="sbtn course-search-button">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <!-- <i class="fa fa-search"></i> -->
-                            <!-- <img src="/wp-content/themes/wplmsblankchildhtheme/assets/imgs/search-normal.png" alt=""> -->
-                        </button>
+                        <div class="col-6 d-lg-none">
+                            <button class="btn btn-sm btn-outline icon-end radius-sm mb-20" type="button"
+                                data-bs-toggle="offcanvas" data-bs-target="#widgetOffcanvas"
+                                aria-controls="widgetOffcanvas">
+                                Filter <i class="fal fa-filter"></i>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <ul class="sort-list list-unstyled mb-20 text-end">
+                                <li class="item">
+                                    <div class="sort-item d-flex align-items-center ">
+                                        <label class="me-2 font-sm">Sort By:</label>
+                                        <div class="sort-select-pr">
+                                            <select id="sort-select">
+                                                <option value="general">General</option>
+                                                <option value="latest">Latest</option>
+                                                <option value="alphabetical">Alphabetical</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <ul class="course-search-results"
-                        style="display:none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-width: 585px; max-height: 200px; overflow-y: auto; z-index: 1000;">
-                        <!-- Search results will be displayed here -->
+                </div>
+                <div id="loader">
+                    <div class="loading">
+                        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+                            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000"
+                                stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330"
+                                stroke-linecap="round"></circle>
+                            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000"
+                                stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110"
+                                stroke-linecap="round"></circle>
+                            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000"
+                                stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000"
+                                stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <div id="show-courses-container" class="row" data-aos="fade-up">
+                    <!-- Courses will populate here -->
+                </div>
+                <nav class="pagination-nav mt-15 mb-25" data-aos="fade-up">
+                    <ul id="pagination-container" class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a class="page-link" href="courses.html" aria-label="Previous">
+                                <i class="far fa-angle-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="courses.html">1</a></li>
+                        <li class="page-item"><a class="page-link" href="courses.html">2</a></li>
+                        <li class="page-item"><a class="page-link" href="courses.html">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="courses.html" aria-label="Next">
+                                <i class="far fa-angle-right"></i>
+                            </a>
+                        </li>
                     </ul>
-                </div>
-
-            </div>
-            <div class="title-course" id="taf-title-course">
-                <h1>All Courses</h1>
+                </nav>
             </div>
         </div>
     </div>
-    <div class="ds-5-course-section">
-        <div class="container">
-            <div id="loader">
-                <div class="lds-roller">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
-            <div id="show-courses-container" class="ds-5-course-wrapper">
+</div>
+<!-- Course-area end -->
+<?php
+global $wpdb;
+$table_name = $wpdb->prefix . 'ptc_items';
 
-                <div class="e-all-course-page-single-card">
-                    <div class="e-all-course-single-card-img">
-                        <!-- <img src="assets/imgs/course-img.png" alt="course-img" /> -->
-                        <img src="../assets/imgs/all-courses/demo.jpg" alt="Estate Agent Diploma" />
-                    </div>
-                    <div class="e-all-course-single-card-title">
-                        <a href="#">Estate Agent Diploma</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+// Retrieve all rows from the table.
+$results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
 
-    <div class="ds-5-pagination-section " id="pagination-container">
-        <div class="container">
-            <div class="pagination-area">
-                <div class="pag-count" id="course-dir-count-bottom">
-                    Viewing page 1 of 79
-                </div>
-                <div class="pagination-links" id="course-dir-pag-bottom">
-                    <span aria-current="page" class="page-numbers current">1</span>
-                    <a class="page-numbers" href="#">2</a>
-                    <span class="page-numbers dots">…</span>
-                    <a class="page-numbers" href="#">79</a>
-                    <a class="next page-numbers" href="#">→</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+$course_ids = [];
 
-
-
-
+foreach ($results as $result) {
+    $course_ids[] = $result["course_id"];
+}
+?>
 <!-- Script For All courses starts -->
-
 <script>
     const clientID = '<?php echo get_option('client_id'); ?>';
     const secretKey = '<?php echo get_option('secret_key'); ?>';
-
-    const apiUrl = 'https://somesite.com/wp-json/custom/v1/posts/';
+    // Updated endpoint for connected courses
+    const apiUrl = 'https://course-dashboard.com/wp-json/custom/v1/connected-courses/';
     const coursesContainer = document.getElementById('show-courses-container');
-    const loader = document.getElementById('loader');
+    const sortSelect = document.getElementById('sort-select');
     const categorySelect = document.getElementById('category-select');
+    const loader = document.getElementById('loader');
+    const clientCourseIds = <?php echo json_encode($course_ids); ?>;
 
     function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
     }
 
+    // Fetch connected courses from the API
     function fetchCourses(cpage = 1, type = 'general', category = '') {
-        const perPage = 16; // Number of courses per page
-
-        loader.style.display = 'flex';
+        const perPage = 9; // Number of courses per page
+        const resultsCountElement = document.querySelector('.course-showing-count-part');
         coursesContainer.style.display = 'none';
 
+        // Use "general" for API if alphabetical sort is selected,
+        // but keep the query parameter as "alphabetical" in the URL
+        const effectiveType = (type === 'alphabetical') ? 'general' : type;
         const newUrl = `${window.location.pathname}?cpage=${cpage}&type=${type}&category=${category}`;
-        window.history.pushState({
-            path: newUrl
-        }, '', newUrl);
+        window.history.pushState({ path: newUrl }, '', newUrl);
 
-        fetch(`${apiUrl}?cpage=${cpage}&per_page=${perPage}&type=${type}&category=${category}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${clientID}:${secretKey}`,
-                    'Content-Type': 'application/json'
-                }
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${clientID}:${secretKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                cpage: cpage,
+                per_page: perPage,
+                type: effectiveType,
+                category: category,
+                course_ids: clientCourseIds
             })
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Invalid API key or other error');
                 }
                 return response.json();
             })
-            .then(data => {
-                // Filter courses to only include those with a product_url
-                filterCoursesWithProductUrl(data.courses).then(filteredCourses => {
-                    displayCourses(filteredCourses);
-                    setupPagination(data.total_pages, cpage, type, category);
-                    loader.style.display = 'none';
-                    coursesContainer.style.display = 'grid';
-                });
+            .then(async data => {
+                if (data.courses) {
+                    loader.style.display = 'block';
+                    resultsCountElement.innerHTML = `Counting <span class="color-primary"> Courses...</span>`;
+
+                    // Fetch price data for each course concurrently
+                    const coursesWithPrice = await Promise.all(data.courses.map(async course => {
+                        const priceData = await fetchPriceAndUrl(course.id);
+                        course.priceData = priceData;
+                        return course;
+                    }));
+
+                    // Filter courses based on valid price
+                    let validCourses = coursesWithPrice.filter(course =>
+                        course.priceData.success &&
+                        course.priceData.data.price !== 'N/A' &&
+                        course.priceData.data.price !== 'Error fetching price'
+                    );
+
+                    // If alphabetical sort is requested, sort the courses by title
+                    if (type === 'alphabetical') {
+                        validCourses.sort((a, b) => a.title.localeCompare(b.title));
+                    }
+
+                    displayCourses(validCourses);
+
+                    const validCoursesTotalPage = Math.ceil(validCourses.length / perPage);
+                    if (validCoursesTotalPage >= 1) {
+                        setupPagination(validCoursesTotalPage, cpage, type, category);
+                    } else {
+                        console.error('No pagination data found in response');
+                    }
+
+                    const totalCourses = validCourses.length;
+                    resultsCountElement.innerHTML = `Found <span class="color-primary">${totalCourses}</span> Courses`;
+                    coursesContainer.style.display = 'flex';
+                } else {
+                    console.error('No courses found in response');
+                }
             })
             .catch(error => {
                 console.error('Error fetching courses:', error);
-                loader.style.display = 'none';
+                alert('There was an issue fetching the courses. Please try again later.');
             });
-    }
-
-    // Function to filter courses that have a product_url
-    function filterCoursesWithProductUrl(courses) {
-        return Promise.all(
-            courses.map(course => {
-                return fetchPrice(course.id).then(productUrl => {
-                    if (productUrl) {
-                        return {
-                            ...course,
-                            productUrl
-                        }; // Include the productUrl in the course object
-                    } else {
-                        return null; // Exclude courses without a product_url
-                    }
-                });
-            })
-        ).then(results => results.filter(course => course !== null)); // Filter out null values
     }
 
     function displayCourses(courses) {
-        const coursesContainer = document.getElementById('show-courses-container');
-        coursesContainer.innerHTML = '';
-
+        coursesContainer.innerHTML = ''; // Clear existing courses
         courses.forEach(course => {
             const courseElement = document.createElement('div');
-            courseElement.classList.add('e-all-course-page-single-card');
-            courseElement.id = `course-${course.id}`;
+            courseElement.classList.add('col-xl-4', 'col-sm-6');
+
+            const thumbnailUrl = course.thumbnail ? course.thumbnail : '<?php echo get_template_directory_uri(); ?>/assets/design_4/images/course/pro-6.jpg';
+            const ratingCount = course.meta.average_rating ? course.meta.average_rating : 0;
+            const courseTitle = course.title ? course.title : 'No title available';
+            const lessons = course.meta.units ? course.meta.units : 'N/A';
+            const price = course.priceData && course.priceData.success ? course.priceData.data.price : 'N/A';
+            const productUrl = course.priceData && course.priceData.success ? course.priceData.data.product_url : `/single-course?course_id=${course.id}`;
+
             courseElement.innerHTML = `
-            <div class="e-all-course-single-card-img">
-                <a class="course-link" href="${course.productUrl}"><img src="${course.thumbnail}" alt="${course.title}" /></a>
-            </div>
-            <div class="e-all-course-single-card-title">
-                <a class="course-link" href="${course.productUrl}">${course.title}</a>
-                <p class="course-price"></p>
-            </div>
-        `;
-
+                <div class="course-default border radius-md mb-25">
+                    <figure class="course-img">
+                        <a href="${productUrl}" title="Image" target="_self" class="lazy-container ratio ratio-2-3">
+                            <img class="lazyload" src="${thumbnailUrl}" data-src="${thumbnailUrl}" alt="course">
+                        </a>
+                        <div class="hover-show">
+                            <a href="${productUrl}" class="btn btn-md btn-primary rounded-pill" title="Enroll Now" target="_self">Enroll Now</a>
+                        </div>
+                    </figure>
+                    <div class="course-details">
+                        <div class="p-3">
+                            <a href="${productUrl}" target="_self" title="Category" class="tag font-sm color-primary mb-1">${course.categories[0]}</a>
+                            <h6 class="course-title lc-2 mb-0">
+                                <a href="${productUrl}" target="_self" title="${courseTitle}">
+                                    ${courseTitle}
+                                </a>
+                            </h6>
+                            <div class="authors mt-15">
+                                <div class="author"></div>
+                                <span class="font-sm icon-start"><i class="fas fa-star"></i>${ratingCount}</span>
+                            </div>
+                        </div>
+                        <div class="course-bottom-info px-3 py-2">
+                            <span class="font-sm"><i class="fas fa-usd-circle"></i>${price}</span>
+                            <span class="font-sm"><i class="fas fa-book-alt"></i>${lessons} Lessons</span>
+                        </div>
+                    </div>
+                </div>
+            `;
             coursesContainer.appendChild(courseElement);
-
-            // Optionally, fetch and update additional details like price
-            updatePrice(course.id);
         });
+        loader.style.display = 'none';
     }
 
-    function fetchPrice(courseId) {
+    function fetchPriceAndUrl(courseId) {
         return fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    action: 'get_course_price',
-                    course_id: courseId,
-                }),
-            })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'get_course_price',
+                course_id: courseId,
+            }),
+        })
             .then(response => response.json())
-            .then(data => {
-                if (data.success && data.data.product_url) {
-                    return data.data.product_url; // Return the product URL
-                } else {
-                    return null; // Return null if no product URL is found
-                }
-            })
+            .then(data => data)
             .catch(error => {
                 console.error('Error fetching price:', error);
-                return null; // Return null if there's an error
-            });
-    }
-
-    function updatePrice(courseId) {
-        const priceContainers = document.querySelectorAll(`#course-${courseId} .course-price`);
-
-        fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    action: 'get_course_price',
-                    course_id: courseId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    priceContainers.forEach(priceContainer => {
-                        priceContainer.innerHTML = data.data.price;
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching price:', error);
+                return { success: false };
             });
     }
 
     function setupPagination(totalPages, currentCpage, type, category) {
-        const paginationContainer = document.getElementById('course-dir-pag-bottom');
-        const paginationCount = document.getElementById('course-dir-count-bottom');
-
-        // Update the page count text
-        paginationCount.textContent = `Viewing page ${currentCpage} of ${totalPages}`;
-
-        // Clear the existing pagination
+        const paginationContainer = document.getElementById('pagination-container');
         paginationContainer.innerHTML = '';
-
         const maxPagesToShow = 3;
         let startPage = Math.max(1, currentCpage - Math.floor(maxPagesToShow / 2));
         let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
         if (endPage - startPage + 1 < maxPagesToShow) {
             startPage = Math.max(1, endPage - maxPagesToShow + 1);
         }
-
-        // Optional: Add "Previous" button
-        if (currentCpage > 1) {
-            const prevButton = document.createElement('a');
-            prevButton.classList.add('page-numbers', 'prev');
-            prevButton.textContent = '←';
-            prevButton.addEventListener('click', () => fetchCourses(currentCpage - 1, type, category));
-            paginationContainer.appendChild(prevButton);
-        }
-
-        // Add the page links
         for (let i = startPage; i <= endPage; i++) {
+            const pageItem = document.createElement('li');
             const pageLink = document.createElement('a');
+            pageLink.setAttribute('href', '#');
+            pageItem.classList.add('page-item');
             pageLink.textContent = i;
-            pageLink.classList.add('page-numbers');
+            pageLink.classList.add('page-link');
             if (i === currentCpage) {
-                pageLink.classList.add('current');
-                pageLink.setAttribute('aria-current', 'page');
-            } else {
-                pageLink.href = '#';
-                pageLink.addEventListener('click', () => fetchCourses(i, type, category));
+                pageItem.classList.add('active');
             }
-            paginationContainer.appendChild(pageLink);
+            pageLink.addEventListener('click', () => {
+                loader.style.display = 'block';
+                fetchCourses(i, type, category);
+            });
+            pageItem.appendChild(pageLink);
+            paginationContainer.appendChild(pageItem);
         }
-
-        // Optional: Add "Next" button
+        if (currentCpage > 1) {
+            const prevItem = document.createElement('li');
+            const prevButton = document.createElement('a');
+            prevButton.setAttribute('href', '#');
+            prevItem.classList.add('page-item');
+            prevButton.classList.add('page-link');
+            prevButton.innerHTML = '<i class="far fa-angle-left"></i>';
+            prevButton.addEventListener('click', () => {
+                loader.style.display = 'block';
+                fetchCourses(currentCpage - 1, type, category);
+            });
+            prevItem.appendChild(prevButton);
+            paginationContainer.insertBefore(prevItem, paginationContainer.firstChild);
+        }
         if (currentCpage < totalPages) {
+            const nextItem = document.createElement('li');
             const nextButton = document.createElement('a');
-            nextButton.classList.add('page-numbers', 'next');
-            nextButton.textContent = '→';
-            nextButton.addEventListener('click', () => fetchCourses(currentCpage + 1, type, category));
-            paginationContainer.appendChild(nextButton);
+            nextButton.setAttribute('href', '#');
+            nextItem.classList.add('page-item');
+            nextButton.classList.add('page-link');
+            nextButton.innerHTML = '<i class="far fa-angle-right"></i>';
+            nextButton.addEventListener('click', () => {
+                loader.style.display = 'block';
+                fetchCourses(currentCpage + 1, type, category);
+            });
+            nextItem.appendChild(nextButton);
+            paginationContainer.appendChild(nextItem);
         }
     }
 
-    categorySelect.addEventListener('change', (e) => {
-        const currentCpage = parseInt(getUrlParameter('cpage')) || 1;
-        const selectedCategory = e.target.value;
-        const sortType = 'general'; // Default sort type
-        fetchCourses(currentCpage, sortType, selectedCategory);
+    let selectedCategory = getUrlParameter('category') || '';
+    sortSelect.addEventListener('change', (e) => {
+        const currentCpage = 1;
+        const newSortType = e.target.value;
+        loader.style.display = 'block';
+        fetchCourses(currentCpage, newSortType, selectedCategory);
+    });
+
+    categorySelect.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+            e.preventDefault();
+            loader.style.display = 'block';
+            selectedCategory = e.target.id;
+            const currentCpage = 1;
+            const sortType = sortSelect.value;
+            fetchCourses(currentCpage, sortType, selectedCategory);
+        }
     });
 
     const initialCpage = parseInt(getUrlParameter('cpage')) || 1;
     const initialType = getUrlParameter('type') || 'general';
-    const initialCategory = getUrlParameter('category') || '';
-    categorySelect.value = initialCategory;
-    fetchCourses(initialCpage, initialType, initialCategory);
+    fetchCourses(initialCpage, initialType, selectedCategory);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Function to load all categories and update the dropdown
+    // Load course categories
+    document.addEventListener('DOMContentLoaded', function () {
         function loadCategories() {
             fetch('https://course-dashboard.com/wp-json/custom/v1/course-categories/', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${clientID}:${secretKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                })
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${clientID}:${secretKey}`,
+                    'Content-Type': 'application/json'
+                }
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Invalid API key or other error');
@@ -344,35 +414,17 @@
                 .then(data => {
                     if (data.success) {
                         const categories = data.data;
-
-                        // Select the dropdown and its text display
-                        const dropdownContent = document.getElementById('catDropdown');
-                        const dropBtnText = document.getElementById('drpdwntxt');
-
-                        // Clear existing items in the dropdown before appending new ones
-                        dropdownContent.innerHTML = '';
-
-                        // Add a default 'All Courses' option to the dropdown
-                        dropdownContent.innerHTML += `<a href="#" onclick="csdsetDropDownItem(this)">All Courses</a>`;
-
-                        // Append each category as a dropdown item
+                        let options = '';
                         categories.forEach(category => {
-                            dropdownContent.innerHTML += `
-                            <a href="#" onclick="csdsetDropDownItem(this)" id="${category.slug}">
-                                ${category.name}
-                            </a>`;
+                            options += `<li class="list-item">
+                                        <a class="category-toggle" id="${category.slug}" href="courses.html" title="link" target="_self">${category.name}</a>
+                                    </li>`;
                         });
-
-                        // Optionally, if needed, update the button text when the category is selected
-                        dropdownContent.addEventListener('click', function(e) {
-                            if (e.target.tagName === 'A') {
-                                const selectedCategory = e.target.innerText;
-                                dropBtnText.textContent = selectedCategory; // Update the button text with the selected category
-                                const currentCpage = 1; // Reset page to 1 when category is changed
-                                let newSelectedCategory = e.target.id;
-                                fetchCourses(currentCpage, 'general', newSelectedCategory); // Fetch courses with the new category
-                            }
-                        });
+                        categorySelect.innerHTML += options;
+                        const showMoreButton = document.getElementById('show-more-button');
+                        if (showMoreButton) {
+                            showMoreButton.style.display = 'none';
+                        }
                     } else {
                         console.error('Failed to fetch categories:', data);
                     }
@@ -381,8 +433,6 @@
                     console.error('Error fetching categories:', error);
                 });
         }
-
-        // Load categories when the page loads
         loadCategories();
     });
 </script>

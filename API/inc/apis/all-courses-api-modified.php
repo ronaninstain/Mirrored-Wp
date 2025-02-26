@@ -48,7 +48,7 @@ add_action('rest_api_init', function () {
     ]);
 
     register_rest_route('custom/v1', '/connected-courses/', [
-        'methods' => 'GET',
+        'methods' => 'POST',
         'callback' => 'get_connected_courses',
         'permission_callback' => 'verify_secret_key',
         'args' => [
@@ -256,19 +256,16 @@ function get_all_courses(WP_REST_Request $request)
 /* Main callback to get connected courses */
 function get_connected_courses(WP_REST_Request $request)
 {
-    $type = $request['type'];
-    $page = $request['cpage'];
-    $per_page = $request['per_page'];
-    $category = $request['category'];
-    $course_ids_param = $request['course_ids'] ?? '';
+    $params = $request->get_params();
 
-    // This array should come from the client site (ptc_items table) where courses are connected to products.
-    // For now, we supply a static array of course IDs. Replace these IDs with the actual ones.
+    $type = isset($params['type']) ? sanitize_text_field($params['type']) : '';
+    $page = isset($params['cpage']) ? intval($params['cpage']) : 1;
+    $per_page = isset($params['per_page']) ? intval($params['per_page']) : 9;
+    $category = isset($params['category']) ? sanitize_text_field($params['category']) : '';
+    $course_ids = isset($params['course_ids']) ? $params['course_ids'] : [];
 
-    //$connected_course_ids = array(370329, 378835, 370305, 370293, 370317);
-
-    // Process course IDs from client site
-    $connected_course_ids = array_map('intval', explode(',', $course_ids_param));
+    // Sanitize course IDs
+    $connected_course_ids = array_map('intval', (array) $course_ids);
     $connected_course_ids = array_filter($connected_course_ids, function ($id) {
         return $id > 0;
     });
