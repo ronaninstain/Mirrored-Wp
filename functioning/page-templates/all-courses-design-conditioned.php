@@ -159,7 +159,7 @@ foreach ($results as $result) {
     const clientID = '<?php echo get_option('client_id'); ?>';
     const secretKey = '<?php echo get_option('secret_key'); ?>';
     // Updated endpoint for connected courses
-    const apiUrl = 'https://course-dashboard.com/wp-json/custom/v1/connected-courses/';
+    const apiUrl = 'https://somesites.com/wp-json/custom/v1/connected-courses/';
     const coursesContainer = document.getElementById('show-courses-container');
     const sortSelect = document.getElementById('sort-select');
     const categorySelect = document.getElementById('category-select');
@@ -229,14 +229,15 @@ foreach ($results as $result) {
 
                     displayCourses(validCourses);
 
-                    const validCoursesTotalPage = Math.ceil(validCourses.length / perPage);
-                    if (validCoursesTotalPage >= 1) {
-                        setupPagination(validCoursesTotalPage, cpage, type, category);
+                    // Use total_pages from API response instead of calculating based on returned courses
+                    const totalPages = data.total_pages;
+                    if (totalPages >= 1) {
+                        setupPagination(totalPages, cpage, type, category);
                     } else {
                         console.error('No pagination data found in response');
                     }
 
-                    const totalCourses = validCourses.length;
+                    const totalCourses = data.total_posts;
                     resultsCountElement.innerHTML = `Found <span class="color-primary">${totalCourses}</span> Courses`;
                     coursesContainer.style.display = 'flex';
                 } else {
@@ -398,7 +399,7 @@ foreach ($results as $result) {
     // Load course categories
     document.addEventListener('DOMContentLoaded', function () {
         function loadCategories() {
-            fetch('https://course-dashboard.com/wp-json/custom/v1/course-categories/', {
+            fetch('https://somesites.com/wp-json/custom/v1/course-categories/', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${clientID}:${secretKey}`,
