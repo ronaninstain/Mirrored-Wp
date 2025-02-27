@@ -158,7 +158,7 @@ foreach ($results as $result) {
 <script>
     const clientID = '<?php echo get_option('client_id'); ?>';
     const secretKey = '<?php echo get_option('secret_key'); ?>';
-    // Updated endpoint for connected courses
+    // Endpoint for connected courses
     const apiUrl = 'https://somesites.com/wp-json/custom/v1/connected-courses/';
     const coursesContainer = document.getElementById('show-courses-container');
     const sortSelect = document.getElementById('sort-select');
@@ -177,9 +177,8 @@ foreach ($results as $result) {
         const resultsCountElement = document.querySelector('.course-showing-count-part');
         coursesContainer.style.display = 'none';
 
-        // Use "general" for API if alphabetical sort is selected,
-        // but keep the query parameter as "alphabetical" in the URL
-        const effectiveType = (type === 'alphabetical') ? 'general' : type;
+        // Pass sort type directly to the API
+        const effectiveType = type;
         const newUrl = `${window.location.pathname}?cpage=${cpage}&type=${type}&category=${category}`;
         window.history.pushState({ path: newUrl }, '', newUrl);
 
@@ -222,14 +221,15 @@ foreach ($results as $result) {
                         course.priceData.data.price !== 'Error fetching price'
                     );
 
-                    // If alphabetical sort is requested, sort the courses by title
-                    if (type === 'alphabetical') {
-                        validCourses.sort((a, b) => a.title.localeCompare(b.title));
-                    }
+                    // (Optional) Client-side sort if needed.
+                    // With the API now sorting properly, this is often redundant.
+                    // if (type === 'alphabetical') {
+                    //     validCourses.sort((a, b) => a.title.localeCompare(b.title));
+                    // }
 
                     displayCourses(validCourses);
 
-                    // Use total_pages from API response instead of calculating based on returned courses
+                    // Use the API's total_pages value for pagination
                     const totalPages = data.total_pages;
                     if (totalPages >= 1) {
                         setupPagination(totalPages, cpage, type, category);
@@ -399,7 +399,7 @@ foreach ($results as $result) {
     // Load course categories
     document.addEventListener('DOMContentLoaded', function () {
         function loadCategories() {
-            fetch('https://somesites.com/wp-json/custom/v1/course-categories/', {
+            fetch('https://somessites.com/wp-json/custom/v1/course-categories/', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${clientID}:${secretKey}`,
