@@ -1,0 +1,50 @@
+.shslidertransform .slick-prev {
+  color: transparent;
+  font-size: 0;
+  width: 52px;
+  height: 52px;
+  background: url("/wp-content/uploads/2025/05/direction-right-3.svg")
+              no-repeat center center;
+  background-size: 52px 52px;
+}
+.shslidertransform .slick-prev:before {
+  content: none !important;
+}
+
+.shslidertransform .slick-next {
+  color: transparent;
+  font-size: 0;
+  width: 52px;
+  height: 52px;
+  background: url("/wp-content/uploads/2025/05/direction-right-2.svg")
+              no-repeat center center;
+  background-size: 52px 52px;
+}
+
+.shslidertransform .slick-next:before {
+  content: none !important;
+}
+
+.shslidertransform .slick-dots li button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: url("/wp-content/uploads/2025/05/Ellipse-7.svg") no-repeat center center;
+  background-size: 8px 8px;
+  opacity: .25;
+}
+
+.shslidertransform .slick-dots li.slick-active button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: url("/wp-content/uploads/2025/05/Ellipse-1.svg") no-repeat center center; !important;
+  background-size: 8px 8px;
+  opacity: .25;
+}
